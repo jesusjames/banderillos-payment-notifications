@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Banderillos Pagos",
+    "slug": "banderillos-payment-notifications",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "backgroundColor": "#FFF8E7",
+    "platforms": ["android"],
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFF8E7"
+    },
+    "android": {
+      "package": "com.banderillos.paymentnotifications",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#FFF8E7",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "softwareKeyboardLayoutMode": "resize",
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": ["expo-font", "./plugins/withReleaseSigning"]
+  }
+}

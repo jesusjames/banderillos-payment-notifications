@@ -1,0 +1,23 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Recibir SMS con la app cerrada. -->
+  <uses-permission android:name="android.permission.RECEIVE_SMS" />
+  <!-- Leer la bandeja para detectar SMS de pago que el receiver no alcanzó a interceptar. -->
+  <uses-permission android:name="android.permission.READ_SMS" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+  <application>
+    <!--
+      Receiver declarado en el manifest: Android lo despierta aunque la app esté cerrada.
+      El permiso BROADCAST_SMS garantiza que solo el sistema pueda enviarle este broadcast.
+    -->
+    <receiver
+      android:name="com.banderillos.smsforwarder.SmsReceiver"
+      android:exported="true"
+      android:permission="android.permission.BROADCAST_SMS">
+      <intent-filter android:priority="999">
+        <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+      </intent-filter>
+    </receiver>
+  </application>
+</manifest>
