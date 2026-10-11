@@ -93,8 +93,9 @@ adb logcat -s BanderillosPagos
 
 ### 3. En la app
 
-Pega el token y el chat_id, toca **Enviar prueba** (debe llegar "✅ Prueba desde Banderillos Pagos"
-al grupo), luego **Guardar** y activa **Reenvío activo**.
+En el inicio toca **Abrir configuración**. Pega el token y el chat_id, toca **Enviar prueba** (debe
+llegar "✅ Prueba desde Banderillos Pagos" al grupo) y luego **Guardar**. Vuelve al inicio y activa
+**Reenvío activo**.
 
 ## Generar el APK (sin EAS)
 
@@ -228,6 +229,12 @@ adb emu sms send 87400 'Bancolombia: tu clave dinamica es 123456. No la comparta
 - Sin internet: apaga Wi-Fi y datos del emulador, envía el SMS de pago (queda "⏳ En cola"), vuelve
   a encender la red y debe pasar a "✅ Enviado".
 
+## Pantallas
+
+- **Inicio**: estado del reenvío, permisos, resumen de los pagos de hoy y acceso a la configuración.
+- **Historial de hoy** (botón "Ver historial completo"): el detalle de cada pago y los SMS no reenviados.
+- **Configuración**: token, chat_id, prueba y filtros. Si sales con cambios sin guardar, la app avisa.
+
 ## Historial
 
 - Solo se guarda el **día actual**; al cambiar de fecha se borra el anterior.
@@ -267,12 +274,17 @@ adb emu sms send 87400 'Bancolombia: tu clave dinamica es 123456. No la comparta
 ## Estructura
 
 ```
-├─ App.tsx                        # carga la fuente y la pantalla
 ├─ app.json                       # nombre, package, ícono, plugins
+├─ react-native.config.js         # excluye react-native-gesture-handler del enlace nativo (ver comentario)
 ├─ src/
-│  ├─ screens/SettingsScreen.tsx  # la única pantalla
-│  ├─ components/                 # Card, ChunkyButton, Field, PermissionRow, HistorySection
-│  ├─ theme.ts / format.ts
+│  ├─ app/                        # rutas (Expo Router)
+│  │  ├─ _layout.tsx              # fuente, encabezados y revisión de SMS al abrir la app
+│  │  ├─ index.tsx                # inicio
+│  │  ├─ historial.tsx            # historial de hoy
+│  │  └─ configuracion.tsx        # Telegram y filtros
+│  ├─ components/                 # Card, ChunkyButton, Field, Screen, HistorySummary, HistoryList…
+│  ├─ hooks/useForwarder.ts       # estado compartido: configuración, permisos, historial
+│  ├─ history.ts / theme.ts / format.ts
 ├─ modules/sms-forwarder/         # módulo local de Expo Modules (autolinked)
 │  ├─ index.ts                    # API para JS (null si no hay módulo nativo)
 │  └─ android/src/main/
