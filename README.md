@@ -155,6 +155,14 @@ dist/banderillos-pagos-v<versión>.apk
 Para publicar una actualización, sube `version` y `android.versionCode` en `app.json` antes de
 compilar.
 
+> **¿Por qué un script y no un comando de Expo?** El único comando de Expo que entrega el archivo
+> APK es EAS Build, que compila en la nube (o con `eas-cli` y una cuenta de Expo) y este proyecto es
+> 100 % local. Para compilar sin EAS, Expo indica justamente `npx expo prebuild` + `gradlew
+> assembleRelease`; `scripts/build-apk.mjs` solo encadena esos dos pasos, funciona igual en Windows
+> y Mac/Linux, revisa antes keystore, SDK y Java, y copia el APK a `dist/`. Si lo que quieres es
+> instalar directo en un celular conectado, usa el comando de Expo `npm run android:release`
+> (ver "Instalar el APK").
+
 ## Instalar el APK en el celular de Juan
 
 No se publica en Play Store (Google restringe el permiso de SMS); el APK se instala directamente.
@@ -167,6 +175,13 @@ No se publica en Play Store (Google restringe el permiso de SMS); el APK se inst
 
 ```bash
 adb install -r dist/banderillos-pagos-v1.0.0.apk
+```
+
+O, sin generar antes el APK, deja que Expo compile la versión release firmada y la instale en el
+celular conectado (usa las mismas credenciales de firma):
+
+```bash
+npm run android:release
 ```
 
 Instalando por cable no aparece el bloqueo de "ajustes restringidos".

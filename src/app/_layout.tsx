@@ -1,5 +1,6 @@
 import { LilitaOne_400Regular, useFonts } from '@expo-google-fonts/lilita-one';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
@@ -7,8 +8,16 @@ import { AppState } from 'react-native';
 import SmsForwarder from '../../modules/sms-forwarder';
 import { colors, fonts } from '../theme';
 
+// La pantalla de carga con el logo se mantiene hasta que la fuente esté lista.
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({ LilitaOne_400Regular });
+  const ready = fontsLoaded || !!fontError;
+
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync().catch(() => {});
+  }, [ready]);
 
   // Al abrir la app y cada vez que vuelve al frente: buscar SMS de pago que no se interceptaron.
   useEffect(() => {
@@ -21,7 +30,7 @@ export default function RootLayout() {
   }, []);
 
   // Si la fuente falla, se sigue con la del sistema.
-  if (!fontsLoaded && !fontError) return null;
+  if (!ready) return null;
 
   return (
     <>

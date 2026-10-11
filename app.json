@@ -7,14 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "backgroundColor": "#FFF8E7",
-    "platforms": [
-      "android"
-    ],
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#FFF8E7"
-    },
+    "platforms": ["android"],
     "android": {
       "package": "com.banderillos.paymentnotifications",
       "versionCode": 1,
@@ -28,7 +21,16 @@
     "plugins": [
       "expo-font",
       "./plugins/withReleaseSigning",
-      "expo-router"
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/logo.png",
+          "imageWidth": 140,
+          "resizeMode": "contain",
+          "backgroundColor": "#FFF8E7"
+        }
+      ]
     ]
   }
 }
