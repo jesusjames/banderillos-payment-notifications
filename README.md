@@ -30,9 +30,9 @@ no alcanzó a interceptar (p. ej. si el sistema mató la app). Esos se reenvían
 ## Requisitos (PC de desarrollo)
 
 - Node.js 20 o superior.
-- **JDK 17**. Si tienes varios JDK, apunta `JAVA_HOME` al 17 en la terminal antes de compilar:
-  - PowerShell: `$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot"`
-  - bash: `export JAVA_HOME=/ruta/al/jdk-17`
+- **JDK 17 o superior** (probado con el **JDK 25**). Se usa el que indique `JAVA_HOME`. Para que
+  compile con el JDK 24+ el proyecto fija la herramienta prefab 2.0.0 (`plugins/withJdk25Support.js`)
+  y excluye del enlace nativo librerías que no usa (`react-native.config.js`).
 - Android SDK (se instala con Android Studio). Si `ANDROID_HOME` no está definido, el script del
   APK usa la ruta por defecto (`%LOCALAPPDATA%\Android\Sdk` en Windows).
 
@@ -99,20 +99,20 @@ llegar "✅ Prueba desde Banderillos Pagos" al grupo) y luego **Guardar**. Vuelv
 
 ## Generar el APK (sin EAS)
 
-### 1. Crear el keystore (una sola vez)
+### 1. Crear la llave de firma (una sola vez)
 
-El keystore es la llave con la que se firma la app. `keytool` viene con el JDK.
-
-```bash
-mkdir keystore
-```
+Android exige que todo APK vaya firmado, y las actualizaciones solo se instalan encima si vienen
+firmadas con **la misma llave** (keystore). Por eso `npm run build:apk` pide las credenciales
+`BANDERILLOS_UPLOAD_*`: la llave no se sube al repo, vive solo en tu PC.
 
 ```bash
-keytool -genkeypair -v -storetype PKCS12 -keystore keystore/banderillos-release.jks -alias banderillos -keyalg RSA -keysize 2048 -validity 10000
+npm run setup:keystore
 ```
 
-Te pedirá una contraseña y unos datos (nombre, organización…). La carpeta `keystore/` y los
-archivos `.jks`/`.keystore` están en `.gitignore`: **nunca** se suben al repo.
+Te pide una contraseña (no se muestra al escribirla), crea `keystore/banderillos-release.jks` y
+agrega las credenciales a `C:\Users\<tu-usuario>\.gradle\gradle.properties` (fuera del repo). Nunca
+sobrescribe una llave existente. La carpeta `keystore/` y los archivos `.jks`/`.keystore` están en
+`.gitignore`: **nunca** se suben al repo.
 
 ### 2. Respaldar el keystore (importante)
 
@@ -123,11 +123,10 @@ celular de Juan, lo que borra la configuración (token, chat_id, filtros) y el h
 Guarda una copia de `keystore/banderillos-release.jks` **y** de las contraseñas en un lugar seguro
 fuera del PC (gestor de contraseñas, USB guardada). No en el repo ni en una carpeta compartida.
 
-### 3. Credenciales de firma
+### 3. Credenciales de firma (si las configuras a mano)
 
-Agrega esto a `~/.gradle/gradle.properties` (en Windows:
-`C:\Users\<tu-usuario>\.gradle\gradle.properties`; créalo si no existe). Ese archivo está fuera del
-repo:
+`npm run setup:keystore` ya las deja listas. Si prefieres crear el keystore tú mismo con `keytool`,
+agrega esto a `C:\Users\<tu-usuario>\.gradle\gradle.properties` (créalo si no existe):
 
 ```properties
 BANDERILLOS_UPLOAD_STORE_FILE=keystore/banderillos-release.jks

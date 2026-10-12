@@ -21,6 +21,7 @@
     "plugins": [
       "expo-font",
       "./plugins/withReleaseSigning",
+      "./plugins/withJdk25Support",
       "expo-router",
       [
         "expo-splash-screen",

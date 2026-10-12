@@ -64,9 +64,9 @@ const signing = Object.fromEntries(SIGNING_KEYS.map((key) => [key, env[key] ?? u
 const missing = SIGNING_KEYS.filter((key) => !signing[key]);
 if (missing.length > 0) {
   fail(
-    `Faltan credenciales de firma: ${missing.join(', ')}.\n` +
-      `   Agrégalas a ${join(gradleHome, 'gradle.properties')} o como variables de entorno.\n` +
-      '   Ver README → "Generar el APK".'
+    'Todavía no está configurada la llave de firma del APK (se hace una sola vez).\n' +
+      '   Ejecuta:  npm run setup:keystore\n' +
+      `   (faltan ${missing.join(', ')} en ${join(gradleHome, 'gradle.properties')})`
   );
 }
 const storeFile = isAbsolute(signing.BANDERILLOS_UPLOAD_STORE_FILE)
@@ -87,12 +87,12 @@ if (!env.ANDROID_HOME && !env.ANDROID_SDK_ROOT) {
 }
 console.log(`  Android SDK: ${env.ANDROID_HOME ?? env.ANDROID_SDK_ROOT}`);
 
-// 3. Java
+// 3. Java (se usa el de JAVA_HOME; el proyecto compila con JDK 17 o superior, probado con el 25)
 const javaMajor = javaMajorVersion();
-if (javaMajor === null || javaMajor < 17 || javaMajor > 21) {
+if (javaMajor === null || javaMajor < 17) {
   fail(
-    `Se necesita JDK 17 (encontrado: ${javaMajor ?? 'ninguno'}).\n` +
-      '   Apunta JAVA_HOME a un JDK 17 antes de compilar. Ver README → "Requisitos".'
+    `Se necesita un JDK 17 o superior (encontrado: ${javaMajor ?? 'ninguno'}).\n` +
+      '   Revisa que JAVA_HOME apunte a tu JDK. Ver README → "Requisitos".'
   );
 }
 console.log(`  Java: ${javaMajor}`);
