@@ -11,6 +11,9 @@ import SmsForwarder, {
 
 export const SMS_PERMISSIONS = [PermissionsAndroid.PERMISSIONS.RECEIVE_SMS, PermissionsAndroid.PERMISSIONS.READ_SMS];
 
+/** Android 13+ pide permiso para mostrar notificaciones (el aviso fijo "Reenviando pagos"). */
+const NEEDS_NOTIFICATION_PERMISSION = Platform.OS === 'android' && Number(Platform.Version) >= 33;
+
 const PREVIEW_CONFIG: ForwarderConfig = {
   enabled: false,
   token: '',
@@ -104,6 +107,7 @@ export function useForwarderStatus() {
   const [smsGranted, setSmsGranted] = useState<boolean | null>(null);
   const [smsBlocked, setSmsBlocked] = useState(false);
   const [batteryOk, setBatteryOk] = useState<boolean | null>(null);
+  const [notificationsGranted, setNotificationsGranted] = useState<boolean | null>(null);
 
   const refresh = useCallback(async () => {
     setConfig(readConfig());
@@ -111,6 +115,11 @@ export function useForwarderStatus() {
     setBatteryOk(SmsForwarder.isIgnoringBatteryOptimizations());
     const checks = await Promise.all(SMS_PERMISSIONS.map((p) => PermissionsAndroid.check(p)));
     setSmsGranted(checks.every(Boolean));
+    setNotificationsGranted(
+      NEEDS_NOTIFICATION_PERMISSION
+        ? await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS)
+        : true
+    );
   }, []);
 
   useFocusEffect(
@@ -136,5 +145,24 @@ export function useForwarderStatus() {
     return granted;
   }, []);
 
-  return { config, setConfig, smsGranted, smsBlocked, batteryOk, refresh, requestSmsPermission };
+  const requestNotificationPermission = useCallback(async () => {
+    if (!NEEDS_NOTIFICATION_PERMISSION) return true;
+    const result = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+    const granted = result === PermissionsAndroid.RESULTS.GRANTED;
+    setNotificationsGranted(granted);
+    if (result === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) SmsForwarder?.openAppSettings();
+    return granted;
+  }, []);
+
+  return {
+    config,
+    setConfig,
+    smsGranted,
+    smsBlocked,
+    batteryOk,
+    notificationsGranted,
+    refresh,
+    requestSmsPermission,
+    requestNotificationPermission,
+  };
 }

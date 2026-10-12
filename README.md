@@ -198,8 +198,23 @@ Instalando por cable no aparece el bloqueo de "ajustes restringidos".
 En la app, tarjeta **Permisos**:
 
 1. **Conceder permiso de SMS** → Permitir. (RECEIVE_SMS para recibir; READ_SMS para buscar en la
-   bandeja los pagos que no se alcanzaron a interceptar.)
-2. **Ignorar optimización de batería** → Permitir.
+   bandeja los pagos que no se alcanzaron a interceptar.) Si se instaló desde un archivo y Android
+   responde "App was denied access to SMS": Ajustes → Apps → Banderillos Pagos → ⋮ → **Permitir
+   ajustes restringidos**, y vuelve a tocar el botón.
+2. **Ignorar optimización de batería** → Permitir. Sin esto, con la pantalla apagada Android corta el
+   internet de la app y los envíos pueden quedar minutos en cola.
+3. **Permitir notificaciones** → Permitir (Android 13+), para ver el aviso fijo.
+
+### Funciona aunque cierren la app
+
+Mientras **Reenvío activo** está encendido, la app mantiene un aviso fijo **"Reenviando pagos"** (un
+servicio en primer plano, como el de MacroDroid). Con él Android no la detiene cuando el cajero la
+cierra o la quita de recientes, y se vuelve a activar sola al reiniciar el celular. No hace falta
+abrirla para que funcione.
+
+- No uses **Forzar detención** en los ajustes de la app: eso sí la apaga hasta que alguien la abra.
+- Si por alguna razón estuvo detenida, al volver a abrirla (o al reiniciar el celular) busca en la
+  bandeja los SMS de pago de las últimas 24 h que no se reenviaron y los envía.
 
 Los fabricantes agregan sus propios ahorradores de batería que pueden impedir que Android despierte
 la app. Los nombres de los menús cambian según la versión.

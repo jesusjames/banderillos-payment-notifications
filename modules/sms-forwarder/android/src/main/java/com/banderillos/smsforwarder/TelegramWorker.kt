@@ -105,7 +105,7 @@ class TelegramWorker(context: Context, params: WorkerParameters) : CoroutineWork
       )
     }
     val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-      .setSmallIcon(android.R.drawable.stat_sys_upload)
+      .setSmallIcon(R.drawable.ic_stat_forwarding)
       .setContentTitle("Banderillos Pagos")
       .setContentText("Enviando pago a Telegram…")
       .setOngoing(true)

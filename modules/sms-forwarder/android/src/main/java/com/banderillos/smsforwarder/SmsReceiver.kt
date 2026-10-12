@@ -41,5 +41,8 @@ class SmsReceiver : BroadcastReceiver() {
         HistoryStore.addIgnored(app, sender, "Error al procesar el SMS: ${e.message}", isError = true)
       }
     }
+
+    // Si el servicio fijo se había caído, se levanta de nuevo aprovechando que la app está despierta.
+    ForwarderService.sync(app)
   }
 }

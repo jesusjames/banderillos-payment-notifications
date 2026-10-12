@@ -64,6 +64,7 @@ class SmsForwarderModule : Module() {
         allowedSenders = input.allowedSenders
       )
       Forwarder.syncMissedCheck(context, ConfigStore.load(context).enabled)
+      ForwarderService.sync(context)
     }
 
     AsyncFunction("sendTest") Coroutine { token: String, chatId: String ->
@@ -86,8 +87,10 @@ class SmsForwarderModule : Module() {
     /** Busca en la bandeja SMS de pago que no se interceptaron. Devuelve cuántos recuperó. */
     AsyncFunction("checkMissedSms") {
       val recovered = MissedSmsChecker.run(context)
-      // Asegura que la revisión periódica siga programada (p. ej. tras actualizar la app).
+      // Asegura que la revisión periódica y el servicio fijo sigan activos (p. ej. tras actualizar la app
+      // o si la detuvieron a la fuerza: abrirla vuelve a levantar todo).
       Forwarder.syncMissedCheck(context, ConfigStore.load(context).enabled)
+      ForwarderService.sync(context)
       recovered
     }
 

@@ -15,8 +15,17 @@ const describeFilters = (config: ForwarderConfig) =>
 
 export default function HomeScreen() {
   const native = SmsForwarder;
-  const { config, setConfig, smsGranted, smsBlocked, batteryOk, refresh, requestSmsPermission } =
-    useForwarderStatus();
+  const {
+    config,
+    setConfig,
+    smsGranted,
+    smsBlocked,
+    batteryOk,
+    notificationsGranted,
+    refresh,
+    requestSmsPermission,
+    requestNotificationPermission,
+  } = useForwarderStatus();
   const { history, refresh: refreshHistory } = useHistory();
   const { retrying, retryFailed } = useHistoryActions(refreshHistory);
 
@@ -34,7 +43,10 @@ export default function HomeScreen() {
     }
     await native.saveConfig({ enabled: value });
     setConfig(readConfig());
-    if (value && smsGranted === false) requestSmsPermission();
+    if (!value) return;
+    // Uno a la vez para no encimar los diálogos de Android.
+    if (smsGranted === false) await requestSmsPermission();
+    if (notificationsGranted === false) await requestNotificationPermission();
   };
 
   return (
@@ -70,7 +82,7 @@ export default function HomeScreen() {
         <Text style={styles.statusText}>{active ? '🟢 Reenviando pagos' : '🔴 Detenido'}</Text>
         <Text style={styles.statusDetail}>
           {active
-            ? 'Cada SMS de pago se envía al grupo de Telegram.'
+            ? 'Cada SMS de pago se envía al grupo de Telegram, aunque cierres la app.'
             : !native
               ? 'Sin módulo nativo.'
               : !config.enabled
@@ -119,9 +131,17 @@ export default function HomeScreen() {
             onPress={() => (native ? native.openBatteryOptimizationSettings() : showPreviewAlert())}
           />
         </PermissionRow>
+        <PermissionRow
+          label="Aviso «Reenviando pagos»"
+          ok={native ? notificationsGranted : false}
+          okText="Permitido: verás un aviso fijo mientras reenvía."
+          missingText="Sin permiso: el reenvío funciona igual, pero no verás el aviso fijo."
+        >
+          <ChunkyButton label="Permitir notificaciones" small variant="white" onPress={requestNotificationPermission} />
+        </PermissionRow>
         <Text style={styles.hint}>
-          En Xiaomi activa también «Inicio automático» y en Samsung agrega la app a «Apps que nunca se suspenden» (ver
-          README).
+          No uses «Forzar detención» en los ajustes de la app. En Xiaomi activa también «Inicio automático» y en
+          Samsung agrega la app a «Apps que nunca se suspenden» (ver README).
         </Text>
       </Card>
 

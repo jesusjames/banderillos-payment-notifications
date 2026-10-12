@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 
 internal object Forwarder {
   private const val MISSED_CHECK_WORK = "missed-sms-check"
+  private const val MISSED_CHECK_NOW_WORK = "missed-sms-check-now"
 
   /** Punto de entrada común del receiver y de la recuperación desde la bandeja. */
   fun handleIncoming(context: Context, sender: String, body: String, receivedAt: Long, recovered: Boolean) {
@@ -66,6 +67,12 @@ internal object Forwarder {
       enqueueSend(context, entry, replace = true)
     }
     return failed.size
+  }
+
+  /** Revisión inmediata de SMS no interceptados (p. ej. al reiniciar el celular o reactivar el servicio). */
+  fun checkMissedSoon(context: Context) {
+    val request = OneTimeWorkRequestBuilder<MissedSmsWorker>().build()
+    WorkManager.getInstance(context).enqueueUniqueWork(MISSED_CHECK_NOW_WORK, ExistingWorkPolicy.KEEP, request)
   }
 
   /** Revisión periódica (cada 15 min, el mínimo de Android) de SMS de pago no interceptados. */
